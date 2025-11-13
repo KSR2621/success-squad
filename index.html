@@ -15,7 +15,6 @@
   --light-gray:#eef2f7;
   --error-color:#e74c3c;
 }
-*{box-sizing:border-box}
 body{
   font-family:'Poppins',sans-serif;
   background:linear-gradient(45deg,#6576ff,#8a65ff);
@@ -37,348 +36,223 @@ body{
   text-align:center;
 }
 .hidden{display:none}
-h2{margin-bottom:1.4rem;font-weight:700}
-.form-group{margin-bottom:1rem;text-align:left}
-label{display:block;margin-bottom:6px;color:var(--gray-color);font-weight:600}
-input[type="text"],input[type="tel"],input[type="number"]{
-  width:100%;padding:10px 12px;border-radius:8px;border:2px solid var(--light-gray);
-  font-family:inherit;font-size:1rem;
-}
 .option{
-  display:block;padding:12px;border-radius:10px;border:2px solid var(--light-gray);
-  margin-bottom:10px;text-align:left;cursor:pointer;
+  display:block;
+  padding:12px;
+  border-radius:10px;
+  border:2px solid var(--light-gray);
+  margin-bottom:10px;
+  text-align:left;
+  cursor:pointer;
 }
 .option:hover{border-color:var(--primary-color);background:var(--primary-light)}
 .option input{margin-right:10px}
-.btn{background:var(--primary-color);color:#fff;border:none;padding:10px 18px;border-radius:8px;font-weight:700;cursor:pointer}
+.btn{
+  background:var(--primary-color);
+  color:#fff;
+  border:none;
+  padding:10px 18px;
+  border-radius:8px;
+  font-weight:700;
+  cursor:pointer;
+}
 .btn[disabled]{opacity:0.5;cursor:not-allowed}
 .btn-small{width:150px;margin:6px}
 .btn-container{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:12px}
-#timer-display{background:var(--primary-light);color:var(--primary-color);padding:6px 12px;border-radius:20px;font-weight:700}
+#timer-display{
+  background:var(--primary-light);
+  color:var(--primary-color);
+  padding:6px 12px;
+  border-radius:20px;
+  font-weight:700;
+}
 #question-counter{color:var(--gray-color);font-weight:600}
 #alert-message{color:var(--error-color);font-weight:700;visibility:hidden;margin-top:10px}
-.results-text{font-size:1.2rem;margin-top:8px}
 </style>
 </head>
 <body>
-  <!-- USER INFO -->
-  <div id="user-info-container" class="container">
-    <h2>Welcome to the Success Squad Quiz</h2>
-    <p style="color:var(--gray-color)">You have <strong>40 minutes</strong>. Switching tabs or time expiry will auto-submit.</p>
-    <form id="user-info-form" style="margin-top:1rem;text-align:left">
-      <div class="form-group"><label for="name">Full Name</label><input id="name" type="text" required></div>
-      <div class="form-group"><label for="contact">Contact Number</label><input id="contact" type="tel" required></div>
-      <div class="form-group"><label for="college">College Name</label><input id="college" type="text" required></div>
-      <div class="form-group"><label for="year">Year of Study</label><input id="year" type="number" min="1" required></div>
-      <div class="form-group"><label for="dept">Department</label><input id="dept" type="text" required></div>
-      <div style="text-align:right;margin-top:8px"><button id="start-quiz-btn" class="btn" type="submit">Start Quiz</button></div>
-    </form>
+
+<!-- USER INFO -->
+<div id="user-info-container" class="container">
+  <h2>Welcome to the Success Squad Quiz</h2>
+  <p style="color:var(--gray-color)">You have <strong>40 minutes</strong>. Switching tabs or time expiry will auto-submit.</p>
+  <form id="user-info-form" style="margin-top:1rem;text-align:left">
+    <label>Full Name</label><input id="name" type="text" required style="width:100%;margin-bottom:1rem;">
+    <label>Contact Number</label><input id="contact" type="tel" required style="width:100%;margin-bottom:1rem;">
+    <label>College Name</label><input id="college" type="text" required style="width:100%;margin-bottom:1rem;">
+    <label>Year of Study</label><input id="year" type="number" min="1" required style="width:100%;margin-bottom:1rem;">
+    <label>Department</label><input id="dept" type="text" required style="width:100%;margin-bottom:1rem;">
+    <button id="start-quiz-btn" class="btn" type="submit" style="float:right;">Start Quiz</button>
+  </form>
+</div>
+
+<!-- QUIZ -->
+<div id="quiz-container" class="container hidden">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+    <div id="question-counter">Question 0 / 0</div>
+    <div id="timer-display">40:00</div>
   </div>
 
-  <!-- QUIZ -->
-  <div id="quiz-container" class="container hidden" aria-live="polite">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-      <div id="question-counter">Question 0 / 0</div>
-      <div id="timer-display">40:00</div>
-    </div>
+  <h2 id="question">Loading...</h2>
+  <div id="options-container"></div>
 
-    <h2 id="question">Loading...</h2>
-    <div id="options-container" role="group" aria-labelledby="question"></div>
-
-    <div class="btn-container" style="margin-top:16px">
-      <button id="prev-btn" class="btn btn-small" type="button">Previous</button>
-      <button id="next-btn" class="btn btn-small" type="button">Next</button>
-      <button id="submit-btn" class="btn btn-small hidden" type="button">Submit</button>
-    </div>
-
-    <div id="alert-message">Alert</div>
+  <div class="btn-container">
+    <button id="prev-btn" class="btn btn-small" type="button">Previous</button>
+    <button id="next-btn" class="btn btn-small" type="button">Next</button>
+    <button id="submit-btn" class="btn btn-small hidden" type="button">Submit</button>
   </div>
 
-  <!-- RESULTS -->
-  <div id="results-container" class="container hidden">
-    <h2>Quiz Complete!</h2>
-    <div id="user-greeting" style="font-weight:700;margin-bottom:6px"></div>
-    <div id="score-text" class="results-text" style="color:var(--primary-color);font-weight:800"></div>
-    <div style="margin-top:10px;color:var(--gray-color)">Your results have been saved.</div>
-  </div>
+  <div id="alert-message">Alert</div>
+</div>
 
-  <!-- Firebase (compat) -->
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+<!-- RESULTS -->
+<div id="results-container" class="container hidden">
+  <h2>Thank You for Completing the Quiz!</h2>
+  <p id="user-greeting" style="font-weight:700;margin-top:1rem"></p>
+  <p style="color:var(--gray-color);margin-top:0.5rem">
+    Your responses have been successfully recorded. Please wait for the final results to be announced.
+  </p>
+</div>
 
-  <script>
-  // -------------------------
-  // Firebase initialization
-  // -------------------------
-  const firebaseConfig = {
-    apiKey: "AIzaSyBVCqchYCJCqnf69PgeSthql-FcVPaAr-w",
-    authDomain: "talent-hub-h3uq0.firebaseapp.com",
-    databaseURL: "https://talent-hub-h3uq0-default-rtdb.firebaseio.com",
-    projectId: "talent-hub-h3uq0",
-    storageBucket: "talent-hub-h3uq0.firebasestorage.app",
-    messagingSenderId: "364217907796",
-    appId: "1:364217907796:web:0dd341d447067c69024bc1"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.database();
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
 
-  // -------------------------
-  // Quiz data (25 questions)
-  // -------------------------
-  const quizData = [
-    { question:"What is the meaning of entrepreneurship?", options:["Working in a company","Starting and managing a new business with risk","Studying business in college","Buying products online"], correctAnswer:"Starting and managing a new business with risk" },
-    { question:"What is bootstrapping?", options:["Raising funds","Using own money","Taking a loan","Selling shares"], correctAnswer:"Using own money" },
-    { question:"What is revenue?", options:["Total earnings","Net profit","Total expenses","Borrowed money"], correctAnswer:"Total earnings" },
-    { question:"What does MVP stand for?", options:["Most Valuable Product","Minimum Viable Product","Market Value Plan","Model Venture Plan"], correctAnswer:"Minimum Viable Product" },
-    { question:"What is break-even point?", options:["No profit, no loss","First sale","Highest revenue","Lowest expense"], correctAnswer:"No profit, no loss" },
-    { question:"What is cash flow?", options:["Money movement","Profit margin","Investment plan","Expense list"], correctAnswer:"Money movement" },
-    { question:"Why do most startups fail?", options:["Lack of marketing","No real problem solved","Too many competitors","Weak branding"], correctAnswer:"No real problem solved" },
-    { question:"What does ROI mean?", options:["Rate of Income","Return on Investment","Revenue of Industry","Ratio of Interest"], correctAnswer:"Return on Investment" },
-    { question:"Mutual funds in India are regulated by:", options:["RBI","SEBI","Ministry of Finance","IRDAI"], correctAnswer:"SEBI" },
-    { question:"Diversification helps in:", options:["Increasing risk","Reducing risk by spreading investments","Maximizing tax","Increasing inflation"], correctAnswer:"Reducing risk by spreading investments" },
-    { question:"You have a great idea for an app, but you can’t code. What is the FIRST thing you do?", options:["Try to find a technical co-founder by posting on LinkedIn","Pay a company ₹5 Lakhs to build the app for you","Learn to code yourself, even if it takes a year","Use a no-code tool to build a simple version (MVP) to see if anyone even wants the app"], correctAnswer:"Use a no-code tool to build a simple version (MVP) to see if anyone even wants the app" },
-    { question:"You have 100 users — 10 love your product, 90 just “like” it. What should you do?", options:["Change the product to please the 90 users","Focus on the 10 who love it and find 100 more like them","Ignore both groups and focus on getting new users","Add 5 new features to excite the 90"], correctAnswer:"Focus on the 10 who love it and find 100 more like them" },
-    { question:"Your competitor has ₹10 Crores funding; you only have ₹10 Lakhs. What’s your best move?", options:["Give up — you can’t compete","Copy their next move quickly","Find one niche you can do 10x better (like one city or customer group)","Send angry emails to investors"], correctAnswer:"Find one niche you can do 10x better (like one city or customer group)" },
-    { question:"Your co-founders are fighting publicly over the logo. What do you do?", options:["Pick the logo yourself to end it","Post a poll to let the public decide","Call a private meeting to find the real cause of conflict","Fire the designer to show leadership"], correctAnswer:"Call a private meeting to find the real cause of conflict" },
-    { question:"An investor offers ₹1 Crore for 50% of your startup. Your gut says it’s a bad deal. What do you do?", options:["Take the money — you need it","Reject rudely to show confidence","Politely decline and keep bootstrapping till better traction","Counter with ₹1 Crore for 10%"], correctAnswer:"Politely decline and keep bootstrapping till better traction" },
-    { question:"Your food delivery app is failing, but users love its chat feature. You relaunch as a chat app. This move is a...", options:["Acquisition","Pivot","Burn Rate","Liquidation"], correctAnswer:"Pivot" },
-    { question:"You spend ₹500 to get a customer. They pay ₹100 per month and stay 12 months. What’s your LTV:CAC ratio?", options:["100:500","1200:500","500:100","1200:1200"], correctAnswer:"1200:500" },
-    { question:"Your app is 90% ready. Co-founder says, “Add one more feature before launch.” What’s the BEST response?", options:["Let’s add it!","No. Launch now; add it later if users ask.","Add 5 more while we’re at it.","Add it, but within 24 hours."], correctAnswer:"No. Launch now; add it later if users ask." },
-    { question:"You have ₹1 Lakh for marketing. What’s the SMARTEST use?", options:["Hire one big influencer","Run one TV commercial","Spend ₹1,000 on 100 small ad experiments to test what works","Print flyers for awareness"], correctAnswer:"Spend ₹1,000 on 100 small ad experiments to test what works" },
-    { question:"Your team has a new idea. What is your first step?", options:["Make everyone sign an NDA","Start coding immediately","Spend 1 hour researching who already tried and failed at this idea","Hold a 3-day brainstorming retreat"], correctAnswer:"Spend 1 hour researching who already tried and failed at this idea" },
-    { question:"Which financial ratio measures how efficiently a company uses its assets to generate profit?", options:["Debt-to-Equity Ratio","Return on Assets (ROA)","Price-to-Earnings Ratio","Current Ratio"], correctAnswer:"Return on Assets (ROA)" },
-    { question:"In finance, the term “unicorn” refers to a startup valued at:", options:["$100 million","$500 million","$1 billion","$10 billion"], correctAnswer:"$1 billion" },
-    { question:"Lenskart reported a net profit of around how much in FY2025?", options:["₹150 crore","₹297 crore","₹520 crore","₹80 crore"], correctAnswer:"₹297 crore" },
-    { question:"Which city topped in total startup funding during July–September 2025?", options:["Bengaluru","Mumbai","Delhi","Hyderabad"], correctAnswer:"Bengaluru" },
-    { question:"The Fund of Funds for Startups (FFS) is managed by which institution?", options:["SIDBI","RBI","SEBI","NITI Aayog"], correctAnswer:"SIDBI" },
-    { question:"The Credit Guarantee Scheme for Startups (CGSS) now allows a maximum cover per borrower of how much?", options:["₹10 crore","₹15 crore","₹20 crore","₹25 crore"], correctAnswer:"₹10 crore" },
-    { question:"Which state launched its Startup, Entrepreneurship & Innovation Policy 2025 aimed at creating 50,000 startups in 5 years?", options:["Gujarat","Maharashtra","Tamil Nadu","Karnataka"], correctAnswer:"Tamil Nadu" }
-  ];
+<script>
+const firebaseConfig = {
+  apiKey:"AIzaSyBVCqchYCJCqnf69PgeSthql-FcVPaAr-w",
+  authDomain:"talent-hub-h3uq0.firebaseapp.com",
+  databaseURL:"https://talent-hub-h3uq0-default-rtdb.firebaseio.com",
+  projectId:"talent-hub-h3uq0",
+  storageBucket:"talent-hub-h3uq0.firebasestorage.app",
+  messagingSenderId:"364217907796",
+  appId:"1:364217907796:web:0dd341d447067c69024bc1"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
 
-  // -------------------------
-  // State variables & DOM
-  // -------------------------
-  let current = 0;
-  let userAnswers = {}; // {index: option}
-  let userInfo = {};
-  let quizSubmitted = false;
-  let timerInterval = null;
-  const TIME_LIMIT_SECONDS = 40 * 60;
+// ---- Quiz Questions ----
+const quizData = [
+{ question:"What is the meaning of entrepreneurship?", options:["Working in a company","Starting and managing a new business with risk","Studying business in college","Buying products online"], correctAnswer:"Starting and managing a new business with risk" },
+{ question:"What is bootstrapping?", options:["Raising funds","Using own money","Taking a loan","Selling shares"], correctAnswer:"Using own money" },
+{ question:"What is revenue?", options:["Total earnings","Net profit","Total expenses","Borrowed money"], correctAnswer:"Total earnings" },
+{ question:"What does MVP stand for?", options:["Most Valuable Product","Minimum Viable Product","Market Value Plan","Model Venture Plan"], correctAnswer:"Minimum Viable Product" },
+{ question:"What is break-even point?", options:["No profit, no loss","First sale","Highest revenue","Lowest expense"], correctAnswer:"No profit, no loss" },
+{ question:"What is cash flow?", options:["Money movement","Profit margin","Investment plan","Expense list"], correctAnswer:"Money movement" },
+{ question:"Why do most startups fail?", options:["Lack of marketing","No real problem solved","Too many competitors","Weak branding"], correctAnswer:"No real problem solved" },
+{ question:"What does ROI mean?", options:["Rate of Income","Return on Investment","Revenue of Industry","Ratio of Interest"], correctAnswer:"Return on Investment" },
+{ question:"Mutual funds in India are regulated by:", options:["RBI","SEBI","Ministry of Finance","IRDAI"], correctAnswer:"SEBI" },
+{ question:"Diversification helps in:", options:["Increasing risk","Reducing risk by spreading investments","Maximizing tax","Increasing inflation"], correctAnswer:"Reducing risk by spreading investments" },
+{ question:"You have a great idea for an app, but you can’t code. What is the FIRST thing you do?", options:["Try to find a technical co-founder","Pay a company ₹5 Lakhs to build the app","Learn to code yourself","Use a no-code tool to build a simple version (MVP)"], correctAnswer:"Use a no-code tool to build a simple version (MVP)" },
+{ question:"You have 100 users — 10 love your product, 90 just “like” it. What should you do?", options:["Please the 90 users","Focus on the 10 who love it","Ignore both groups","Add new features"], correctAnswer:"Focus on the 10 who love it" },
+{ question:"Your competitor has ₹10 Crores funding; you only have ₹10 Lakhs. What’s your best move?", options:["Give up","Copy their move","Find one niche you can do 10x better","Send angry emails"], correctAnswer:"Find one niche you can do 10x better" },
+{ question:"Your co-founders are fighting over the logo. What do you do?", options:["Pick yourself","Public poll","Private meeting to find cause","Fire designer"], correctAnswer:"Private meeting to find cause" },
+{ question:"An investor offers ₹1 Crore for 50% of your startup. What do you do?", options:["Take it","Reject rudely","Politely decline and bootstrap","Counter ₹1Cr for 10%"], correctAnswer:"Politely decline and bootstrap" },
+{ question:"Your food app is failing but users love chat feature. Relaunching as chat app is called?", options:["Acquisition","Pivot","Liquidation","Burn Rate"], correctAnswer:"Pivot" },
+{ question:"You spend ₹500 to get a customer. They pay ₹100/month for 12 months. LTV:CAC?", options:["100:500","1200:500","500:100","1200:1200"], correctAnswer:"1200:500" },
+{ question:"Your app is 90% ready. Co-founder says add more features. You say?", options:["Add now","Launch now; add later","Add 5 more","Add quickly"], correctAnswer:"Launch now; add later" },
+{ question:"You have ₹1 Lakh for marketing. Best use?", options:["Hire influencer","Run TV ad","Do 100 small ad experiments","Print flyers"], correctAnswer:"Do 100 small ad experiments" },
+{ question:"Your team has a new idea. First step?", options:["Make NDA","Start coding","Research who already failed","Brainstorm 3 days"], correctAnswer:"Research who already failed" },
+{ question:"Which ratio measures efficiency in using assets?", options:["Debt-to-Equity","Return on Assets (ROA)","P/E Ratio","Current Ratio"], correctAnswer:"Return on Assets (ROA)" },
+{ question:"A “unicorn” startup is valued at:", options:["$100M","$500M","$1B","$10B"], correctAnswer:"$1B" },
+{ question:"Lenskart reported net profit of:", options:["₹150 crore","₹297 crore","₹520 crore","₹80 crore"], correctAnswer:"₹297 crore" },
+{ question:"Which city topped startup funding (Jul–Sep 2025)?", options:["Bengaluru","Mumbai","Delhi","Hyderabad"], correctAnswer:"Bengaluru" },
+{ question:"The Fund of Funds for Startups is managed by:", options:["SIDBI","RBI","SEBI","NITI Aayog"], correctAnswer:"SIDBI" }
+];
 
-  const userInfoContainer = document.getElementById('user-info-container');
-  const quizContainer = document.getElementById('quiz-container');
-  const resultsContainer = document.getElementById('results-container');
-  const qEl = document.getElementById('question');
-  const optionsContainer = document.getElementById('options-container');
-  const prevBtn = document.getElementById('prev-btn');
-  const nextBtn = document.getElementById('next-btn');
-  const submitBtn = document.getElementById('submit-btn');
-  const counterEl = document.getElementById('question-counter');
-  const timerDisplay = document.getElementById('timer-display');
-  const alertMessage = document.getElementById('alert-message');
+// ---- Variables ----
+let current=0,userAnswers={},userInfo={},quizSubmitted=false,timerInterval;
+const TIME_LIMIT_SECONDS=40*60;
+const quizC=document.getElementById('quiz-container');
+const userInfoC=document.getElementById('user-info-container');
+const resC=document.getElementById('results-container');
+const qEl=document.getElementById('question');
+const optC=document.getElementById('options-container');
+const nextBtn=document.getElementById('next-btn');
+const prevBtn=document.getElementById('prev-btn');
+const submitBtn=document.getElementById('submit-btn');
+const counter=document.getElementById('question-counter');
+const timerDisplay=document.getElementById('timer-display');
 
-  // Helper to get form values safely
-  function getUserFormValues(){
-    return {
-      name: document.getElementById('name').value.trim(),
-      contact: document.getElementById('contact').value.trim(),
-      college: document.getElementById('college').value.trim(),
-      year: document.getElementById('year').value.trim(),
-      department: document.getElementById('dept').value.trim()
-    };
-  }
+// ---- Functions ----
+function startTimer(){
+ let t=TIME_LIMIT_SECONDS;
+ const update=()=>{
+  const m=Math.floor(t/60),s=t%60;
+  timerDisplay.textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  if(t<=0){saveAns();submitQuiz("time_expired");}
+  t--;
+ };
+ update();
+ timerInterval=setInterval(update,1000);
+}
 
-  // -------------------------
-  // Timer
-  // -------------------------
-  function startTimer(){
-    let remaining = TIME_LIMIT_SECONDS;
-    function update(){
-      const m = Math.floor(remaining / 60);
-      const s = remaining % 60;
-      timerDisplay.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-      if(remaining <= 0){
-        // ensure we save current answer before submitting
-        saveCurrentAnswer();
-        submitQuiz('time_expired');
-      }
-      remaining--;
-    }
-    update();
-    timerInterval = setInterval(update, 1000);
-  }
+function startQuiz(){
+ userInfoC.classList.add('hidden');
+ quizC.classList.remove('hidden');
+ loadQ();
+ startTimer();
+}
 
-  // -------------------------
-  // Render question
-  // -------------------------
-  function loadQuestion(){
-    const item = quizData[current];
-    qEl.textContent = item.question;
-    optionsContainer.innerHTML = '';
+function loadQ(){
+ const q=quizData[current];
+ qEl.innerText=q.question;
+ optC.innerHTML='';
+ counter.innerText=`Question ${current+1} / ${quizData.length}`;
+ q.options.forEach(opt=>{
+   const id=`q${current}-${opt.replace(/\s+/g,'-')}`;
+   optC.innerHTML+=`<label class="option"><input type="radio" id="${id}" name="q${current}" value="${opt}" ${userAnswers[current]===opt?'checked':''}> ${opt}</label>`;
+ });
+ prevBtn.disabled=current===0;
+ nextBtn.classList.toggle('hidden',current===quizData.length-1);
+ submitBtn.classList.toggle('hidden',current!==quizData.length-1);
+}
 
-    counterEl.textContent = `Question ${current + 1} / ${quizData.length}`;
+function saveAns(){
+ const sel=document.querySelector(`input[name="q${current}"]:checked`);
+ userAnswers[current]=sel?sel.value:null;
+}
 
-    // create radio options
-    item.options.forEach((opt, idx) => {
-      const inputId = `q${current}_opt${idx}`;
-      const checked = userAnswers[current] === opt ? 'checked' : '';
-      const label = document.createElement('label');
-      label.className = 'option';
-      label.innerHTML = `<input type="radio" id="${inputId}" name="q${current}" value="${escapeHtml(opt)}" ${checked}> ${opt}`;
-      optionsContainer.appendChild(label);
-    });
+function submitQuiz(reason="user_submitted"){
+ if(quizSubmitted)return;
+ quizSubmitted=true;
+ clearInterval(timerInterval);
+ saveAns();
 
-    // Prev enabled except first
-    prevBtn.disabled = current === 0;
+ let score=0;
+ quizData.forEach((q,i)=>{if(userAnswers[i]===q.correctAnswer)score++;});
 
-    // Next hidden on last; submit visible only on last
-    if (current === quizData.length - 1) {
-      nextBtn.classList.add('hidden');
-      submitBtn.classList.remove('hidden');
-    } else {
-      nextBtn.classList.remove('hidden');
-      submitBtn.classList.add('hidden');
-    }
+ db.ref('quizSubmissions').push({
+  userInfo,score,total:quizData.length,answers:userAnswers,
+  submittedAt:new Date().toISOString(),reason
+});
 
-    // clear any alert
-    alertMessage.style.visibility = 'hidden';
-  }
+ quizC.classList.add('hidden');
+ resC.classList.remove('hidden');
+ document.getElementById('user-greeting').innerText=`Thank you, ${userInfo.name || 'Participant'}!`;
 
-  // small helper to avoid HTML injection inside value attribute
-  function escapeHtml(str){
-    return String(str).replace(/"/g,'&quot;');
-  }
+ if(reason==="tab_switched"||reason==="time_expired"){
+   alert(`Quiz auto-submitted (${reason.replace('_',' ')})`);
+ }
+}
 
-  // Save currently selected option for current question
-  function saveCurrentAnswer(){
-    const selected = document.querySelector(`input[name="q${current}"]:checked`);
-    userAnswers[current] = selected ? selected.value : null;
-  }
+// ---- Event Listeners ----
+document.getElementById('user-info-form').addEventListener('submit',e=>{
+ e.preventDefault();
+ userInfo={
+   name:document.getElementById('name').value,
+   contact:document.getElementById('contact').value,
+   college:document.getElementById('college').value,
+   year:document.getElementById('year').value,
+   department:document.getElementById('dept').value
+ };
+ startQuiz();
+});
 
-  // Submit the quiz (single place)
-  function submitQuiz(reason = 'user_submitted'){
-    if(quizSubmitted) return; // prevent double submit
-    quizSubmitted = true;
-
-    // ensure we save the current question answer
-    saveCurrentAnswer();
-
-    // stop timer
-    if(timerInterval) clearInterval(timerInterval);
-
-    // compute score
-    let score = 0;
-    quizData.forEach((q, i) => {
-      if(userAnswers[i] === q.correctAnswer) score++;
-    });
-
-    // prepare payload
-    const payload = {
-      userInfo,
-      score,
-      totalQuestions: quizData.length,
-      answers: userAnswers,
-      submittedAt: new Date().toISOString(),
-      submissionReason: reason
-    };
-
-    // write to firebase, but don't block UI on network
-    try {
-      db.ref('quizSubmissions').push(payload)
-        .then(() => console.log('Saved to Firebase'))
-        .catch(err => console.error('Firebase save error', err));
-    } catch(e) {
-      console.error('Firebase push exception', e);
-    }
-
-    // show results UI
-    quizContainer.classList.add('hidden');
-    resultsContainer.classList.remove('hidden');
-    document.getElementById('user-greeting').textContent = `Thank you, ${userInfo.name || 'Participant'}!`;
-    document.getElementById('score-text').textContent = `Your score: ${score} / ${quizData.length}`;
-
-    // show message if auto-submitted
-    if(reason === 'tab_switched' || reason === 'time_expired'){
-      alertMessage.textContent = reason === 'tab_switched' ? 'Auto-submitted because you switched tabs.' : 'Time expired — quiz auto-submitted.';
-      alertMessage.style.visibility = 'visible';
-      // place alert inside results container for visibility (if needed)
-      if (alertMessage.parentElement !== resultsContainer) {
-        resultsContainer.insertBefore(alertMessage, resultsContainer.firstChild);
-      }
-    }
-  }
-
-  // -------------------------
-  // Event handlers
-  // -------------------------
-  document.getElementById('user-info-form').addEventListener('submit', function (e) {
-    e.preventDefault();
-    const formVals = getUserFormValues();
-    // basic validation
-    if(!formVals.name || !formVals.contact || !formVals.college){
-      alert('Please fill required fields (name, contact, college).');
-      return;
-    }
-    userInfo = formVals;
-    userInfoContainer.classList.add('hidden');
-    quizContainer.classList.remove('hidden');
-    // initialize state
-    current = 0;
-    userAnswers = {};
-    quizSubmitted = false;
-    loadQuestion();
-    startTimer();
-  });
-
-  nextBtn.addEventListener('click', function () {
-    saveCurrentAnswer();
-    if (current < quizData.length - 1) {
-      current++;
-      loadQuestion();
-    }
-  });
-
-  prevBtn.addEventListener('click', function () {
-    saveCurrentAnswer();
-    if (current > 0) {
-      current--;
-      loadQuestion();
-    }
-  });
-
-  // IMPORTANT: submit works reliably
-  submitBtn.addEventListener('click', function () {
-    // ensure current answer saved, then submit
-    saveCurrentAnswer();
-    // optional: confirmation
-    const confirmSubmit = confirm('Are you sure you want to submit the quiz?');
-    if (confirmSubmit) {
-      submitQuiz('user_submitted');
-    }
-  });
-
-  // auto-submit on tab change
-  document.addEventListener('visibilitychange', function () {
-    if (document.hidden) {
-      // save current and auto submit
-      saveCurrentAnswer();
-      submitQuiz('tab_switched');
-    }
-  });
-
-  // Accessibility: allow keyboard next/prev with arrow keys
-  document.addEventListener('keydown', function (ev) {
-    if (quizContainer.classList.contains('hidden')) return;
-    if (ev.key === 'ArrowRight') { nextBtn.click(); }
-    if (ev.key === 'ArrowLeft') { prevBtn.click(); }
-  });
-
-  // ensure the last displayed radio (if any) gets focus for keyboard users
-  optionsContainer.addEventListener('change', function () {
-    const sel = document.querySelector(`input[name="q${current}"]:checked`);
-    if (sel) sel.focus();
-  });
-
-  </script>
+nextBtn.addEventListener('click',()=>{saveAns();if(current<quizData.length-1){current++;loadQ();}});
+prevBtn.addEventListener('click',()=>{saveAns();if(current>0){current--;loadQ();}});
+submitBtn.addEventListener('click',()=>{saveAns();submitQuiz("user_submitted");});
+document.addEventListener('visibilitychange',()=>{if(document.hidden){saveAns();submitQuiz("tab_switched");}});
+</script>
 </body>
 </html>
